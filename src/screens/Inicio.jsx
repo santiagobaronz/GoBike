@@ -11,10 +11,10 @@ export const Inicio = () => {
 					Ingresa y conviérte en un GoBiker.
 				</p>
 				<div className='mt-5'>
-					<Link to={'/xd'}>
+					<Link to={'/auth/login'}>
 						<button className='bg-purple-color w-full text-white-color h-14 rounded-lg mb-5'>Iniciar sesión</button>
 					</Link>
-					<Link to={'/xd'}>
+					<Link to={'/register'}>
 						<button className='bg-purple-darker-color text-white-color w-full h-14 rounded-lg'>Regístrase ahora</button>
 					</Link>
 				</div>

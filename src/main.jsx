@@ -6,6 +6,7 @@ import './index.css'
 
 import { Root } from './Root'
 import { Inicio } from './screens/Inicio'
+import { Login } from './Auth/Login'
 
 const router = createBrowserRouter([
 	{
@@ -13,6 +14,13 @@ const router = createBrowserRouter([
 	  element: <Root/>,
 	  children: [
 		{ path: '/', element: <Inicio/> },
+		{
+		  path: '/auth',
+		  element: <Root/>,
+		  children: [
+			{ path: 'login', element: <Login/> },
+		  ]
+		},
 	  ]
 	}
   ]);
