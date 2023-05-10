@@ -14,7 +14,7 @@ export const Inicio = () => {
 					<Link to={'/auth/login'}>
 						<button className='bg-purple-color w-full text-white-color h-14 rounded-lg mb-5'>Iniciar sesión</button>
 					</Link>
-					<Link to={'/register'}>
+					<Link to={'/auth/register'}>
 						<button className='bg-purple-darker-color text-white-color w-full h-14 rounded-lg'>Regístrase ahora</button>
 					</Link>
 				</div>
