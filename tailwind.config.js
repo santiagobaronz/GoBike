@@ -21,7 +21,10 @@ module.exports = {
 			'text-color': '#D9D9D0',
 			'purple-color': '#646cff',
 			'purple-darker-color': '#454ce1',
-			'white-color': '#FFFFFF'
+			'white-color': '#FFFFFF',
+			'daily': '#7F91E6',
+			'monthly': '#438196',
+			'yearly': '#38914F'
 		}
 	},
 	plugins: [],
