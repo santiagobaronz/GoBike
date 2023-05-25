@@ -18,6 +18,7 @@ export const Register = () => {
 		telefono: '',
 		eps: '',
 		plan: '',
+		numberCard: '',
 
 	});
 
@@ -215,10 +216,56 @@ export const Register = () => {
 			) : (
 				<label>
 					<input type="radio" name="plan" value="Otro" onChange={handleInputChange} onClick={handleNextStep} style={{ display: "none" }} />
-					<p className='text-center text-[15px] text-text-color mt-6 cursor-pointer' >No necesito un plan (Aplican tarifas platas)</p>
+					<p className='text-center text-[15px] text-text-color mt-6 cursor-pointer' >No necesito un plan (Aplican tarifas planas)</p>
 				</label>
 			)}
 
+		</div>
+	)
+
+	const renderStepFourth = () => (
+		<div>
+			<label className='font-semibold text-[15.5px] text-text-color'>Número de tarjeta</label>
+			<input
+				className=' h-11 pl-5 bg-bg-color text-text-color rounded-md mt-2 w-full mb-5'
+				type='number'
+				name='numberCard'
+				min={0}
+				max={9999999999}
+				value={formData.numberCard}
+				onChange={handleInputChange}
+				placeholder='Ingresa tu número de tarjeta'
+			/>
+			<label className='font-semibold text-[15.5px] text-text-color'>Fecha de expiración</label>
+			<div className='flex gap-5'>
+				<input
+					className='w-1/2 h-11 pl-5 bg-bg-color text-text-color rounded-md mt-2 mb-5'
+					type='text'
+					name='tipoID'
+					value={formData.tipoID}
+					onChange={handleInputChange}
+					placeholder='Mes'
+				/>
+				<input
+					className=' h-11 pl-5 bg-bg-color pr-5 text-text-color rounded-md mt-2 w-1/2 mb-5'
+					type='text'
+					name='numeroID'
+					value={formData.numeroID}
+					onChange={handleInputChange}
+					placeholder='Año'
+				/>
+			</div>
+			<label className='font-semibold text-[15.5px] text-text-color'>Código de seguridad</label>
+			<input
+				className=' h-11 pl-5 bg-bg-color text-text-color rounded-md mt-2 w-full mb-5'
+				type='number'
+				name='numberCard'
+				min={0}
+				max={9999999999}
+				value={formData.numberCard}
+				onChange={handleInputChange}
+				placeholder='Ingresa el código de seguridad'
+			/>
 		</div>
 	)
 
@@ -262,6 +309,8 @@ export const Register = () => {
 								return renderStepTwo();
 							case 3:
 								return renderStepThree();
+							case 4:
+								return renderStepFourth();
 						}
 					})()}
 
