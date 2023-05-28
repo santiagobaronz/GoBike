@@ -1,18 +1,21 @@
 import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
-import { MdKeyboardBackspace, MdInfoOutline } from 'react-icons/md'
+import { Link, Navigate } from 'react-router-dom'
+import { MdKeyboardBackspace, MdInfoOutline, MdDone, MdNotInterested } from 'react-icons/md'
+import { BsFillCreditCard2BackFill, BsFillCreditCardFill } from "react-icons/bs";
 import validateData from './components/ValidateData';
+import registerUserDB from './components/registerUserDB';
 
 export const Register = () => {
 
 	const [step, setStep] = useState(1);
 	const [tooltip, setTooltip] = useState(false);
 	const [errorFields, setErrorFields] = useState([]);
+	const [resultRegister, setResultRegister] = useState();
 	const [formData, setFormData] = useState({
 		nombres: 'Santiago',
 		apellidos: 'Baron',
 		correo: 'sbz@cor.com',
-		contrasena: 'prueba',
+		contrasena: 'Prueba1234*',
 		nacionalidad: 'Colombia',
 		tipoID: 'CC',
 		numeroID: '12345678',
@@ -30,6 +33,12 @@ export const Register = () => {
 
 	});
 
+	const registerUser = async () => {
+		const result = await registerUserDB(formData);
+		setResultRegister(result);
+		setTimeout(function () { window.location.href = "/auth/login"; }, 3000);
+	}
+
 	const handleInputChange = (event) => {
 		const { name, value } = event.target;
 		setFormData((prevFormData) => ({
@@ -43,6 +52,15 @@ export const Register = () => {
 			setFormData({
 				...formData,
 				plan: ''
+			});
+		}
+	};
+
+	const handleTypeCardReset = (event) => {
+		if (formData.tipoTarjeta === event.target.value) {
+			setFormData({
+				...formData,
+				tipoTarjeta: ''
 			});
 		}
 	};
@@ -108,9 +126,15 @@ export const Register = () => {
 			}
 		}
 
-		
-
 		if (step == 4) {
+			if (!validateData(formData.titularTarjeta, 'dataText')) {
+				hasErrors = true;
+				fieldsWithErrors.push('titularTarjeta');
+			}
+			if (!validateData(formData.tipoTarjeta, 'dataText')) {
+				hasErrors = true;
+				fieldsWithErrors.push('tipoTarjeta');
+			}
 			if (!validateData(formData.numeroTarjeta, 'dataCard')) {
 				hasErrors = true;
 				fieldsWithErrors.push('numeroTarjeta');
@@ -132,10 +156,14 @@ export const Register = () => {
 		if (hasErrors) {
 			setErrorFields(fieldsWithErrors);
 			console.log(fieldsWithErrors)
-		  } else {
+		} else {
 			setErrorFields([]);
-			setStep(step + 1);
-		  }
+			if (step != 4) {
+				setStep(step + 1);
+			} else {
+				registerUser();
+			}
+		}
 	}
 
 	const handlePreviousStep = () => {
@@ -372,6 +400,38 @@ export const Register = () => {
 
 	const renderStepFourth = () => (
 		<div>
+			<label className='font-semibold text-[15.5px] text-text-color'>Nombre del titular</label>
+			<input
+				className={`h-11 pl-5 bg-bg-color text-text-color rounded-md mt-2 w-full mb-5 ${errorFields.includes('titularTarjeta') ? 'error' : ''}`}
+				type='text'
+				name='titularTarjeta'
+				value={formData.titularTarjeta}
+				onChange={handleInputChange}
+				placeholder='Ingresa el nombre del titular'
+			/>
+
+			<div className='flex gap-x-5 mb-5'>
+				<label className='w-1/2'>
+					<input type="radio" name="tipoTarjeta" value="CRE" onChange={handleInputChange} onClick={handleTypeCardReset} checked={formData.tipoTarjeta === "CRE"} style={{ display: "none" }} />
+					<div className={`p-[15px] rounded-lg mb-2 inputTypeOne transition-all text-white-color border-2 border-daily border-opacity-30 ${errorFields.includes('tipoTarjeta') ? 'errorTipo' : ''}`} style={{ backgroundColor: formData.tipoTarjeta === "CRE" ? "#7F91E6" : "" }}>
+						<div className='justify-center flex items-center gap-x-3'>
+							<BsFillCreditCard2BackFill></BsFillCreditCard2BackFill>
+							<h4>Crédito</h4>
+						</div>
+					</div>
+				</label>
+				<label className='w-1/2'>
+					<input type="radio" name="tipoTarjeta" value="DEB" onChange={handleInputChange} onClick={handleTypeCardReset} checked={formData.tipoTarjeta === "DEB"} style={{ display: "none" }} />
+					<div className={`p-[15px] rounded-lg mb-2 inputTypeTwo text-white-color transition-all border-2 border-monthly border-opacity-30 ${errorFields.includes('tipoTarjeta') ? 'errorTipo' : ''}`} style={{ backgroundColor: formData.tipoTarjeta === "DEB" ? "#438196" : "" }}>
+						<div className='justify-center flex items-center gap-x-3'>
+							<BsFillCreditCardFill></BsFillCreditCardFill>
+							<h4>Débito</h4>
+						</div>
+					</div>
+				</label>
+			</div>
+
+
 			<label className='font-semibold text-[15.5px] text-text-color'>Número de tarjeta</label>
 			<input
 				className={`h-11 pl-5 bg-bg-color text-text-color rounded-md mt-2 w-full mb-5 ${errorFields.includes('numeroTarjeta') ? 'error' : ''}`}
@@ -417,7 +477,6 @@ export const Register = () => {
 				onChange={handleInputChange}
 				placeholder='Ingresa el código de seguridad'
 			/>
-			<img src="/bg-registro.png" alt="" className='w-60 m-auto mb-6 mt-2' />
 		</div>
 	)
 
@@ -450,6 +509,30 @@ export const Register = () => {
 						}
 					})()}
 				</p>
+
+
+				{resultRegister != undefined && (
+					<div className='absolute bg-purple-darker-color text-text-color top-40 left-[75px] w-4/6 p-9 text-center rounded-lg'>
+						{resultRegister === 'ok' ? (
+							<div className='m-auto'>
+								<div className='text-xl'>
+									<MdDone className='m-auto text-8xl mb-5'></MdDone>
+								</div>
+								<h3 className='mb-3 text-xl'>Registrado</h3>
+								<p className='mb-5'>El usuario se ha registrado con éxito</p>
+								<hr />
+								<p className='mt-5'>Serás redireccionado para iniciar sesión</p>
+							</div>
+						) : resultRegister === 'dup' ? (
+							<div>
+
+								<MdNotInterested className='m-auto text-8xl mb-5'></MdNotInterested>
+								<h3 className='mb-3 text-xl'>Error</h3>
+								<p>Este usuario ya está registrado</p>
+							</div>
+						) : (<></>)}
+					</div>
+				)}
 
 				<form action="" className='mt-7'>
 

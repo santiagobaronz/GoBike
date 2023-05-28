@@ -37,7 +37,6 @@ const validateData = (data, type) => {
 
 	if(type == 'dataCard'){
 		const number = data;
-		console.log(data.length)
 		const dataRegex = /^\d+$/;
 		return data !== '' && data.length == 16 && dataRegex.test(number);
 	}
@@ -51,7 +50,7 @@ const validateData = (data, type) => {
 	if(type == 'dataYear'){
 		const number = data;
 		const dataRegex = /^\d+$/;
-		return data !== '' && data >= 2023 && data <= 2050 && data.length == 4 && dataRegex.test(number);
+		return data !== '' && data >= 23 && data <= 50 && data.length == 2 && dataRegex.test(number);
 	}
 
 }
