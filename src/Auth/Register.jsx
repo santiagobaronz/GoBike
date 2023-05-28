@@ -1,10 +1,12 @@
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { MdKeyboardBackspace } from 'react-icons/md'
+import { MdKeyboardBackspace, MdInfoOutline } from 'react-icons/md'
+import validateData from './components/ValidateData';
 
 export const Register = () => {
 
 	const [step, setStep] = useState(1);
+	const [tooltip, setTooltip] = useState(false);
 	const [formData, setFormData] = useState({
 		nombres: '',
 		apellidos: '',
@@ -18,7 +20,10 @@ export const Register = () => {
 		telefono: '',
 		eps: '',
 		plan: '',
-		numberCard: '',
+		numeroTarjeta: '',
+		mesTarjeta: '',
+		yearTarjeta: '',
+		codigoTarjeta: '',
 
 	});
 
@@ -40,7 +45,35 @@ export const Register = () => {
 	};
 
 	const handleNextStep = () => {
-		setStep(step + 1)
+
+		if (step == 1) {
+			if (validateData(formData.nombres, 'dataText') && validateData(formData.apellidos, 'dataText') &&
+				validateData(formData.correo, 'dataEmail') && validateData(formData.contrasena, 'dataPassword') &&
+				validateData(formData.nacionalidad, 'dataText')) {
+				setStep(step + 1)
+			}
+		}
+
+		if (step == 2) {
+			if (validateData(formData.tipoID, 'dataText') && validateData(formData.numeroID, 'dataNumber') &&
+				validateData(formData.fechaNacimiento, 'dataDate') && validateData(formData.sexo, 'dataText') &&
+				validateData(formData.telefono, 'dataPhone') && validateData(formData.eps, 'dataText')) {
+				setStep(step + 1)
+			}
+		}
+
+		if(step == 3){
+			if(validateData(formData.plan, 'dataText')){
+				setStep(step + 1)
+			}
+		}
+
+		if(step == 4){
+			if(validateData(formData.numeroTarjeta, 'dataNumber') && validateData(formData.mesTarjeta, 'dataNumber') &&
+			validateData(formData.yearTarjeta, 'dataNumber') && validateData(formData.codigoTarjeta, 'dataNumber')){
+				console.log("listo")
+			}
+		}
 	}
 
 	const handlePreviousStep = () => {
@@ -72,32 +105,72 @@ export const Register = () => {
 			<label className='font-semibold text-[15.5px] text-text-color'>Correo electrónico</label>
 			<input
 				className=' h-11 pl-5 bg-bg-color text-text-color rounded-md mt-2 w-full mb-5'
-				type='text'
+				type='mail'
 				name='correo'
 				value={formData.correo}
 				onChange={handleInputChange}
 				placeholder='Ingresa tu correo electrónico'
 			/>
 
-			<label className='font-semibold text-[15.5px] text-text-color'>Contraseña</label>
-			<input
-				className=' h-11 pl-5 bg-bg-color text-text-color rounded-md mt-2 w-full mb-5'
-				type='text'
-				name='contrasena'
-				value={formData.contrasena}
-				onChange={handleInputChange}
-				placeholder='Ingresa tu contraseña'
-			/>
+			<div className='relative'>
+				<label className='font-semibold text-[15.5px] text-text-color'>Contraseña</label>
+				<input
+					className=' h-11 pl-5 bg-bg-color text-text-color rounded-md mt-2 w-full mb-5'
+					type='password'
+					name='contrasena'
+					value={formData.contrasena}
+					onChange={handleInputChange}
+					placeholder='Ingresa tu contraseña'
+				/>
+				<span className='absolute top-11 right-4 cursor-pointer text-xl text-purple-color'
+					onClick={() => tooltip ? setTooltip(false) : setTooltip(true)}>
+					<MdInfoOutline></MdInfoOutline>
+				</span>
+				{tooltip ? (
+					<div className='absolute w-full bg-daily text-white-color text-left p-5 -top-48 text-sm rounded-md'>
+						<p className='mb-2'>Tu clave debe contener:</p>
+						<ul className='list-disc pl-4'>
+							<li>Al menos 8 caracteres de longitud.</li>
+							<li>Al menos una letra mayúscula.</li>
+							<li>Al menos una letra minúscula.</li>
+							<li>Al menos un dígito numérico.</li>
+							<li>Puede contener caracteres especiales.</li>
+						</ul>
+					</div>
+				) : null}
+			</div>
+
 
 			<label className='font-semibold text-[15.5px] text-text-color'>Nacionalidad</label>
-			<input
-				className=' h-11 pl-5 bg-bg-color text-text-color rounded-md mt-2 w-full mb-5'
-				type='text'
-				name='nacionalidad'
+			<select
+				className="h-11 pl-5 bg-bg-color text-text-color rounded-md mt-2 w-full mb-5 border-r-[15px] border-bg-color"
+				name="nacionalidad"
 				value={formData.nacionalidad}
 				onChange={handleInputChange}
-				placeholder='Selecciona tu nacionalidad'
-			/>
+				placeholder="Selecciona tu nacionalidad"
+			>
+				<option value="">Selecciona tu nacionalidad</option>
+				<option value="Argentina">Argentina</option>
+				<option value="Bolivia">Bolivia</option>
+				<option value="Brasil">Brasil</option>
+				<option value="Chile">Chile</option>
+				<option value="Colombia">Colombia</option>
+				<option value="Costa Rica">Costa Rica</option>
+				<option value="Cuba">Cuba</option>
+				<option value="Ecuador">Ecuador</option>
+				<option value="El Salvador">El Salvador</option>
+				<option value="Guatemala">Guatemala</option>
+				<option value="Honduras">Honduras</option>
+				<option value="México">México</option>
+				<option value="Nicaragua">Nicaragua</option>
+				<option value="Panamá">Panamá</option>
+				<option value="Paraguay">Paraguay</option>
+				<option value="Perú">Perú</option>
+				<option value="República Dominicana">República Dominicana</option>
+				<option value="Uruguay">Uruguay</option>
+				<option value="Venezuela">Venezuela</option>
+
+			</select>
 		</div>
 	);
 
@@ -105,17 +178,20 @@ export const Register = () => {
 		<div>
 			<label className='font-semibold text-[15.5px] text-text-color'>Tipo y numero de identificación</label>
 			<div className='flex gap-5'>
-				<input
+				<select
 					className='w-1/3 h-11 pl-5 bg-bg-color text-text-color rounded-md mt-2 mb-5'
-					type='text'
 					name='tipoID'
 					value={formData.tipoID}
 					onChange={handleInputChange}
-					placeholder='Tipo ID'
-				/>
+				>
+					<option value=''>Tipo</option>
+					<option value='CC'>CC</option>
+					<option value='PA'>PA</option>
+					<option value='CE'>CE</option>
+				</select>
 				<input
 					className=' h-11 pl-5 bg-bg-color pr-5 text-text-color rounded-md mt-2 w-2/3 mb-5'
-					type='text'
+					type='number'
 					name='numeroID'
 					value={formData.numeroID}
 					onChange={handleInputChange}
@@ -131,14 +207,17 @@ export const Register = () => {
 				onChange={handleInputChange}
 			/>
 			<label className='font-semibold text-[15.5px] text-text-color'>Sexo</label>
-			<input
-				className=' h-11 pl-5 bg-bg-color text-text-color rounded-md mt-2 w-full mb-5'
-				type='text'
+			<select
+				className='h-11 pl-5 bg-bg-color text-text-color rounded-md mt-2 w-full mb-5 border-r-[15px] border-bg-color'
 				name='sexo'
 				value={formData.sexo}
 				onChange={handleInputChange}
-				placeholder='Selecciona tu sexo biológico'
-			/>
+			>
+				<option value=''>Selecciona tu sexo biológico</option>
+				<option value='M'>Masculino</option>
+				<option value='F'>Femenino</option>
+				<option value='O'>Otro</option>
+			</select>
 			<label className='font-semibold text-[15.5px] text-text-color'>Número de teléfono</label>
 			<input
 				className=' h-11 pl-5 bg-bg-color text-text-color rounded-md mt-2 w-full mb-5'
@@ -151,23 +230,29 @@ export const Register = () => {
 				placeholder='Ingresa tu número de teléfono'
 			/>
 			<label className='font-semibold text-[15.5px] text-text-color'>EPS</label>
-			<input
-				className=' h-11 pl-5 bg-bg-color text-text-color rounded-md mt-2 w-full mb-5'
-				type='text'
+			<select
+				className='h-11 pl-5 bg-bg-color text-text-color rounded-md mt-2 w-full mb-5 border-r-[15px] border-bg-color'
 				name='eps'
-				min={0}
-				max={9999999999}
 				value={formData.eps}
 				onChange={handleInputChange}
-				placeholder='Selecciona tu EPS'
-			/>
+			>
+				<option value=''>Selecciona tu EPS</option>
+				<option value='Compensar'>Compensar</option>
+				<option value='Sura'>Sura</option>
+				<option value='Sanitas'>Sanitas</option>
+				<option value='Coomeva'>Coomeva</option>
+				<option value='Famisanar'>Famisanar</option>
+				<option value='Salud Total'>Salud Total</option>
+				<option value='Nueva EPS'>Nueva EPS</option>
+				<option value='Aliansalud'>Aliansalud</option>
+			</select>
 		</div>
 	);
 
 	const renderStepThree = () => (
 		<div>
 			<label>
-				<input type="radio" name="plan" value="Diario" onChange={handleInputChange} onClick={handlePlanReset}  checked={formData.plan === "Diario"}  style={{ display: "none" }} />
+				<input type="radio" name="plan" value="Diario" onChange={handleInputChange} onClick={handlePlanReset} checked={formData.plan === "Diario"} style={{ display: "none" }} />
 				<div className=' p-[16px] rounded-lg mb-2 transition-all text-white-color border-2 border-daily border-opacity-30' style={{ backgroundColor: formData.plan === "Diario" ? "#7F91E6" : "" }}>
 					<div className='flex justify-between mb-3'>
 						<h2>Plan diario</h2>
@@ -182,7 +267,7 @@ export const Register = () => {
 				</div>
 			</label>
 			<label>
-				<input type="radio" name="plan" value="Mensual" onChange={handleInputChange} onClick={handlePlanReset}  checked={formData.plan === "Mensual"} style={{ display: "none" }} />
+				<input type="radio" name="plan" value="Mensual" onChange={handleInputChange} onClick={handlePlanReset} checked={formData.plan === "Mensual"} style={{ display: "none" }} />
 				<div className=' p-[16px] rounded-lg mb-2 text-white-color transition-all border-2 border-monthly border-opacity-30' style={{ backgroundColor: formData.plan === "Mensual" ? "#438196" : "" }}>
 					<div className='flex justify-between mb-3'>
 						<h2>Plan mensual</h2>
@@ -197,7 +282,7 @@ export const Register = () => {
 				</div>
 			</label>
 			<label>
-				<input type="radio" name="plan" value="Anual" onChange={handleInputChange} onClick={handlePlanReset}  checked={formData.plan === "Anual"} style={{ display: "none" }} />
+				<input type="radio" name="plan" value="Anual" onChange={handleInputChange} onClick={handlePlanReset} checked={formData.plan === "Anual"} style={{ display: "none" }} />
 				<div className=' p-[16px] rounded-lg text-white-color transition-all border-2 border-yearly border-opacity-30' style={{ backgroundColor: formData.plan === "Anual" ? "#38914F" : "" }}>
 					<div className='flex justify-between mb-3'>
 						<h2>Plan anual</h2>
@@ -211,7 +296,7 @@ export const Register = () => {
 					</ul>
 				</div>
 			</label>
-			{formData.plan == "Diario" || formData.plan == "Mensual"  || formData.plan == "Anual" ? (
+			{formData.plan == "Diario" || formData.plan == "Mensual" || formData.plan == "Anual" ? (
 				<button className='bg-purple-darker-color w-full text-white-color h-12 rounded-lg mt-4' onClick={handleNextStep}>Siguiente paso</button>
 			) : (
 				<label>
@@ -229,10 +314,10 @@ export const Register = () => {
 			<input
 				className=' h-11 pl-5 bg-bg-color text-text-color rounded-md mt-2 w-full mb-5'
 				type='number'
-				name='numberCard'
+				name='numeroTarjeta'
 				min={0}
 				max={9999999999}
-				value={formData.numberCard}
+				value={formData.numeroTarjeta}
 				onChange={handleInputChange}
 				placeholder='Ingresa tu número de tarjeta'
 			/>
@@ -240,17 +325,21 @@ export const Register = () => {
 			<div className='flex gap-5'>
 				<input
 					className='w-1/2 h-11 pl-5 bg-bg-color text-text-color rounded-md mt-2 mb-5'
-					type='text'
-					name='tipoID'
-					value={formData.tipoID}
+					type='number'
+					name='mesTarjeta'
+					min={1}
+					max={12}
+					value={formData.mesTarjeta}
 					onChange={handleInputChange}
 					placeholder='Mes'
 				/>
 				<input
 					className=' h-11 pl-5 bg-bg-color pr-5 text-text-color rounded-md mt-2 w-1/2 mb-5'
-					type='text'
-					name='numeroID'
-					value={formData.numeroID}
+					type='number'
+					name='yearTarjeta'
+					min={2023}
+					max={2050}
+					value={formData.yearTarjeta}
 					onChange={handleInputChange}
 					placeholder='Año'
 				/>
@@ -259,13 +348,14 @@ export const Register = () => {
 			<input
 				className=' h-11 pl-5 bg-bg-color text-text-color rounded-md mt-2 w-full mb-5'
 				type='number'
-				name='numberCard'
+				name='codigoTarjeta'
 				min={0}
-				max={9999999999}
-				value={formData.numberCard}
+				max={99999}
+				value={formData.codigoTarjeta}
 				onChange={handleInputChange}
 				placeholder='Ingresa el código de seguridad'
 			/>
+			<img src="/bg-registro.png" alt="" className='w-60 m-auto mb-6 mt-2' />
 		</div>
 	)
 
