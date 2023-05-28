@@ -7,23 +7,26 @@ export const Register = () => {
 
 	const [step, setStep] = useState(1);
 	const [tooltip, setTooltip] = useState(false);
+	const [errorFields, setErrorFields] = useState([]);
 	const [formData, setFormData] = useState({
-		nombres: '',
-		apellidos: '',
-		correo: '',
-		contrasena: '',
-		nacionalidad: '',
-		tipoID: '',
-		numeroID: '',
-		fechaNacimiento: '',
-		sexo: '',
-		telefono: '',
-		eps: '',
-		plan: '',
-		numeroTarjeta: '',
-		mesTarjeta: '',
-		yearTarjeta: '',
-		codigoTarjeta: '',
+		nombres: 'Santiago',
+		apellidos: 'Baron',
+		correo: 'sbz@cor.com',
+		contrasena: 'prueba',
+		nacionalidad: 'Colombia',
+		tipoID: 'CC',
+		numeroID: '12345678',
+		fechaNacimiento: '2003-06-07',
+		sexo: 'M',
+		telefono: '3203773769',
+		eps: 'Compensar',
+		plan: 'Diario',
+		titularTarjeta: 'Santiago',
+		tipoTarjeta: 'DEB',
+		numeroTarjeta: '1234123412341234',
+		mesTarjeta: '12',
+		yearTarjeta: '24',
+		codigoTarjeta: '1234',
 
 	});
 
@@ -46,34 +49,93 @@ export const Register = () => {
 
 	const handleNextStep = () => {
 
+		let hasErrors = false;
+		const fieldsWithErrors = [];
+
 		if (step == 1) {
-			if (validateData(formData.nombres, 'dataText') && validateData(formData.apellidos, 'dataText') &&
-				validateData(formData.correo, 'dataEmail') && validateData(formData.contrasena, 'dataPassword') &&
-				validateData(formData.nacionalidad, 'dataText')) {
-				setStep(step + 1)
+
+			if (!validateData(formData.nombres, 'dataText')) {
+				hasErrors = true;
+				fieldsWithErrors.push('nombres');
+			}
+
+			if (!validateData(formData.apellidos, 'dataText')) {
+				hasErrors = true;
+				fieldsWithErrors.push('apellidos');
+			}
+
+			if (!validateData(formData.correo, 'dataEmail')) {
+				hasErrors = true;
+				fieldsWithErrors.push('correo');
+			}
+
+			if (!validateData(formData.contrasena, 'dataPassword')) {
+				hasErrors = true;
+				fieldsWithErrors.push('contrasena');
+			}
+
+			if (!validateData(formData.nacionalidad, 'dataText')) {
+				hasErrors = true;
+				fieldsWithErrors.push('nacionalidad');
 			}
 		}
 
 		if (step == 2) {
-			if (validateData(formData.tipoID, 'dataText') && validateData(formData.numeroID, 'dataNumber') &&
-				validateData(formData.fechaNacimiento, 'dataDate') && validateData(formData.sexo, 'dataText') &&
-				validateData(formData.telefono, 'dataPhone') && validateData(formData.eps, 'dataText')) {
-				setStep(step + 1)
+
+			if (!validateData(formData.tipoID, 'dataText')) {
+				hasErrors = true;
+				fieldsWithErrors.push('tipoID');
+			}
+			if (!validateData(formData.numeroID, 'dataNumber')) {
+				hasErrors = true;
+				fieldsWithErrors.push('numeroID');
+			}
+			if (!validateData(formData.fechaNacimiento, 'dataDate')) {
+				hasErrors = true;
+				fieldsWithErrors.push('fechaNacimiento');
+			}
+			if (!validateData(formData.sexo, 'dataText')) {
+				hasErrors = true;
+				fieldsWithErrors.push('sexo');
+			}
+			if (!validateData(formData.telefono, 'dataPhone')) {
+				hasErrors = true;
+				fieldsWithErrors.push('telefono');
+			}
+			if (!validateData(formData.eps, 'dataText')) {
+				hasErrors = true;
+				fieldsWithErrors.push('eps');
 			}
 		}
 
-		if(step == 3){
-			if(validateData(formData.plan, 'dataText')){
-				setStep(step + 1)
+		
+
+		if (step == 4) {
+			if (!validateData(formData.numeroTarjeta, 'dataCard')) {
+				hasErrors = true;
+				fieldsWithErrors.push('numeroTarjeta');
+			}
+			if (!validateData(formData.mesTarjeta, 'dataMonth')) {
+				hasErrors = true;
+				fieldsWithErrors.push('mesTarjeta');
+			}
+			if (!validateData(formData.yearTarjeta, 'dataYear')) {
+				hasErrors = true;
+				fieldsWithErrors.push('yearTarjeta');
+			}
+			if (!validateData(formData.codigoTarjeta, 'dataNumber')) {
+				hasErrors = true;
+				fieldsWithErrors.push('codigoTarjeta');
 			}
 		}
 
-		if(step == 4){
-			if(validateData(formData.numeroTarjeta, 'dataNumber') && validateData(formData.mesTarjeta, 'dataNumber') &&
-			validateData(formData.yearTarjeta, 'dataNumber') && validateData(formData.codigoTarjeta, 'dataNumber')){
-				console.log("listo")
-			}
-		}
+		if (hasErrors) {
+			setErrorFields(fieldsWithErrors);
+			console.log(fieldsWithErrors)
+		  } else {
+			setErrorFields([]);
+			setStep(step + 1);
+		  }
 	}
 
 	const handlePreviousStep = () => {
@@ -84,7 +146,7 @@ export const Register = () => {
 		<div>
 			<label className='font-semibold text-[15.5px] text-text-color'>Nombres</label>
 			<input
-				className=' h-11 pl-5 bg-bg-color text-text-color rounded-md mt-2 w-full mb-5'
+				className={`h-11 pl-5 bg-bg-color text-text-color rounded-md mt-2 w-full mb-5 ${errorFields.includes('nombres') ? 'error' : ''}`}
 				type='text'
 				name='nombres'
 				value={formData.nombres}
@@ -94,7 +156,7 @@ export const Register = () => {
 
 			<label className='font-semibold text-[15.5px] text-text-color'>Apellidos</label>
 			<input
-				className=' h-11 pl-5 bg-bg-color text-text-color rounded-md mt-2 w-full mb-5'
+				className={`h-11 pl-5 bg-bg-color text-text-color rounded-md mt-2 w-full mb-5 ${errorFields.includes('apellidos') ? 'error' : ''}`}
 				type='text'
 				name='apellidos'
 				value={formData.apellidos}
@@ -104,7 +166,7 @@ export const Register = () => {
 
 			<label className='font-semibold text-[15.5px] text-text-color'>Correo electrónico</label>
 			<input
-				className=' h-11 pl-5 bg-bg-color text-text-color rounded-md mt-2 w-full mb-5'
+				className={`h-11 pl-5 bg-bg-color text-text-color rounded-md mt-2 w-full mb-5 ${errorFields.includes('correo') ? 'error' : ''}`}
 				type='mail'
 				name='correo'
 				value={formData.correo}
@@ -115,7 +177,7 @@ export const Register = () => {
 			<div className='relative'>
 				<label className='font-semibold text-[15.5px] text-text-color'>Contraseña</label>
 				<input
-					className=' h-11 pl-5 bg-bg-color text-text-color rounded-md mt-2 w-full mb-5'
+					className={`h-11 pl-5 bg-bg-color text-text-color rounded-md mt-2 w-full mb-5 ${errorFields.includes('contrasena') ? 'error' : ''}`}
 					type='password'
 					name='contrasena'
 					value={formData.contrasena}
@@ -143,7 +205,7 @@ export const Register = () => {
 
 			<label className='font-semibold text-[15.5px] text-text-color'>Nacionalidad</label>
 			<select
-				className="h-11 pl-5 bg-bg-color text-text-color rounded-md mt-2 w-full mb-5 border-r-[15px] border-bg-color"
+				className={`h-11 pl-5 bg-bg-color text-text-color rounded-md mt-2 w-full mb-5 border-r-[15px] border-bg-color ${errorFields.includes('nacionalidad') ? 'error' : ''}`}
 				name="nacionalidad"
 				value={formData.nacionalidad}
 				onChange={handleInputChange}
@@ -179,7 +241,7 @@ export const Register = () => {
 			<label className='font-semibold text-[15.5px] text-text-color'>Tipo y numero de identificación</label>
 			<div className='flex gap-5'>
 				<select
-					className='w-1/3 h-11 pl-5 bg-bg-color text-text-color rounded-md mt-2 mb-5'
+					className={`w-1/3 h-11 pl-5 bg-bg-color text-text-color rounded-md mt-2 mb-5 border-r-8 border-bg-color ${errorFields.includes('tipoID') ? 'error' : ''}`}
 					name='tipoID'
 					value={formData.tipoID}
 					onChange={handleInputChange}
@@ -190,7 +252,7 @@ export const Register = () => {
 					<option value='CE'>CE</option>
 				</select>
 				<input
-					className=' h-11 pl-5 bg-bg-color pr-5 text-text-color rounded-md mt-2 w-2/3 mb-5'
+					className={`h-11 pl-5 bg-bg-color text-text-color rounded-md mt-2 w-2/3 mb-5 ${errorFields.includes('numeroID') ? 'error' : ''}`}
 					type='number'
 					name='numeroID'
 					value={formData.numeroID}
@@ -200,7 +262,7 @@ export const Register = () => {
 			</div>
 			<label className='font-semibold text-[15.5px] text-text-color'>Fecha de nacimiento</label>
 			<input
-				className=' h-11 pl-5 pr-5 bg-bg-color text-text-color rounded-md mt-2 w-full mb-5'
+				className={`h-11 pl-5 bg-bg-color text-text-color rounded-md mt-2 w-full mb-5 border-r-[15px] border-bg-color ${errorFields.includes('fechaNacimiento') ? 'error' : ''}`}
 				type='date'
 				name='fechaNacimiento'
 				value={formData.fechaNacimiento}
@@ -208,7 +270,7 @@ export const Register = () => {
 			/>
 			<label className='font-semibold text-[15.5px] text-text-color'>Sexo</label>
 			<select
-				className='h-11 pl-5 bg-bg-color text-text-color rounded-md mt-2 w-full mb-5 border-r-[15px] border-bg-color'
+				className={`w-full h-11 pl-5 bg-bg-color text-text-color rounded-md mt-2 mb-5 border-r-8 border-bg-color ${errorFields.includes('sexo') ? 'error' : ''}`}
 				name='sexo'
 				value={formData.sexo}
 				onChange={handleInputChange}
@@ -220,7 +282,7 @@ export const Register = () => {
 			</select>
 			<label className='font-semibold text-[15.5px] text-text-color'>Número de teléfono</label>
 			<input
-				className=' h-11 pl-5 bg-bg-color text-text-color rounded-md mt-2 w-full mb-5'
+				className={`h-11 pl-5 bg-bg-color text-text-color rounded-md mt-2 w-full mb-5 border-r-[15px] border-bg-color ${errorFields.includes('telefono') ? 'error' : ''}`}
 				type='number'
 				name='telefono'
 				min={0}
@@ -231,7 +293,7 @@ export const Register = () => {
 			/>
 			<label className='font-semibold text-[15.5px] text-text-color'>EPS</label>
 			<select
-				className='h-11 pl-5 bg-bg-color text-text-color rounded-md mt-2 w-full mb-5 border-r-[15px] border-bg-color'
+				className={`w-full h-11 pl-5 bg-bg-color text-text-color rounded-md mt-2 mb-5 border-r-8 border-bg-color ${errorFields.includes('eps') ? 'error' : ''}`}
 				name='eps'
 				value={formData.eps}
 				onChange={handleInputChange}
@@ -312,7 +374,7 @@ export const Register = () => {
 		<div>
 			<label className='font-semibold text-[15.5px] text-text-color'>Número de tarjeta</label>
 			<input
-				className=' h-11 pl-5 bg-bg-color text-text-color rounded-md mt-2 w-full mb-5'
+				className={`h-11 pl-5 bg-bg-color text-text-color rounded-md mt-2 w-full mb-5 ${errorFields.includes('numeroTarjeta') ? 'error' : ''}`}
 				type='number'
 				name='numeroTarjeta'
 				min={0}
@@ -324,7 +386,7 @@ export const Register = () => {
 			<label className='font-semibold text-[15.5px] text-text-color'>Fecha de expiración</label>
 			<div className='flex gap-5'>
 				<input
-					className='w-1/2 h-11 pl-5 bg-bg-color text-text-color rounded-md mt-2 mb-5'
+					className={`w-1/2 h-11 pl-5 bg-bg-color text-text-color rounded-md mt-2 mb-5 ${errorFields.includes('mesTarjeta') ? 'error' : ''}`}
 					type='number'
 					name='mesTarjeta'
 					min={1}
@@ -334,7 +396,7 @@ export const Register = () => {
 					placeholder='Mes'
 				/>
 				<input
-					className=' h-11 pl-5 bg-bg-color pr-5 text-text-color rounded-md mt-2 w-1/2 mb-5'
+					className={`w-1/2 h-11 pl-5 bg-bg-color text-text-color rounded-md mt-2 mb-5 ${errorFields.includes('yearTarjeta') ? 'error' : ''}`}
 					type='number'
 					name='yearTarjeta'
 					min={2023}
@@ -346,7 +408,7 @@ export const Register = () => {
 			</div>
 			<label className='font-semibold text-[15.5px] text-text-color'>Código de seguridad</label>
 			<input
-				className=' h-11 pl-5 bg-bg-color text-text-color rounded-md mt-2 w-full mb-5'
+				className={`h-11 pl-5 bg-bg-color text-text-color rounded-md mt-2 w-full mb-5 ${errorFields.includes('codigoTarjeta') ? 'error' : ''}`}
 				type='number'
 				name='codigoTarjeta'
 				min={0}

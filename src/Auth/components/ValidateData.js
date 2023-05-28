@@ -35,6 +35,25 @@ const validateData = (data, type) => {
 		return data !== '' && dataRegex.test(date);
 	}
 
+	if(type == 'dataCard'){
+		const number = data;
+		console.log(data.length)
+		const dataRegex = /^\d+$/;
+		return data !== '' && data.length == 16 && dataRegex.test(number);
+	}
+
+	if(type == 'dataMonth'){
+		const number = data;
+		const dataRegex = /^\d+$/;
+		return data !== '' && data >= 1 && data <= 12 && data.length <= 2 && dataRegex.test(number);
+	}
+
+	if(type == 'dataYear'){
+		const number = data;
+		const dataRegex = /^\d+$/;
+		return data !== '' && data >= 2023 && data <= 2050 && data.length == 4 && dataRegex.test(number);
+	}
+
 }
 
 export default validateData;

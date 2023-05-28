@@ -20,3 +20,8 @@ input[type=number]::-moz-number-spin-box {
 	-webkit-appearance: none;
 	margin: 0;
   }
+
+  .error {
+	border: 2px solid;
+	border-color: rgb(106, 35, 35);
+  }
