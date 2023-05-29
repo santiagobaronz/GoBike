@@ -1,5 +1,6 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { Link } from 'react-router-dom'
+
 
 export const Inicio = () => {
 	return (
@@ -11,10 +12,10 @@ export const Inicio = () => {
 					Ingresa y conviérte en un GoBiker.
 				</p>
 				<div className='mt-5'>
-					<Link to={'/auth/login'}>
+					<Link to={'/login'}>
 						<button className='bg-purple-color w-full text-white-color h-14 rounded-lg mb-5'>Iniciar sesión</button>
 					</Link>
-					<Link to={'/auth/register'}>
+					<Link to={'/register'}>
 						<button className='bg-purple-darker-color text-white-color w-full h-14 rounded-lg'>Regístrase ahora</button>
 					</Link>
 				</div>

@@ -8,6 +8,7 @@ import { Root } from './Root'
 import { Inicio } from './screens/Inicio'
 import { Login } from './Auth/Login'
 import { Register } from './Auth/Register'
+import { Perfil } from './screens/Perfil'
 
 const router = createBrowserRouter([
 	{
@@ -15,14 +16,10 @@ const router = createBrowserRouter([
 	  element: <Root/>,
 	  children: [
 		{ path: '/', element: <Inicio/> },
-		{
-		  path: '/auth',
-		  element: <Root/>,
-		  children: [
-			{ path: 'login', element: <Login/> },
-			{ path: 'register', element: <Register/> },
-		  ]
-		},
+		{ path: 'login', element: <Login/> },
+		{ path: 'register', element: <Register/> },
+		{ path: 'perfil', element: <Perfil/> },
+		,
 	  ]
 	}
   ]);

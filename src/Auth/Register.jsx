@@ -36,7 +36,7 @@ export const Register = () => {
 	const registerUser = async () => {
 		const result = await registerUserDB(formData);
 		setResultRegister(result);
-		setTimeout(function () { window.location.href = "/auth/login"; }, 3000);
+		setTimeout(function () { window.location.href = "/login"; }, 3000);
 	}
 
 	const handleInputChange = (event) => {
@@ -342,8 +342,8 @@ export const Register = () => {
 	const renderStepThree = () => (
 		<div>
 			<label>
-				<input type="radio" name="plan" value="Diario" onChange={handleInputChange} onClick={handlePlanReset} checked={formData.plan === "Diario"} style={{ display: "none" }} />
-				<div className=' p-[16px] rounded-lg mb-2 transition-all text-white-color border-2 border-daily border-opacity-30' style={{ backgroundColor: formData.plan === "Diario" ? "#7F91E6" : "" }}>
+				<input type="radio" name="plan" value="PDI" onChange={handleInputChange} onClick={handlePlanReset} checked={formData.plan === "PDI"} style={{ display: "none" }} />
+				<div className=' p-[16px] rounded-lg mb-2 transition-all text-white-color border-2 border-daily border-opacity-30' style={{ backgroundColor: formData.plan === "PDI" ? "#7F91E6" : "" }}>
 					<div className='flex justify-between mb-3'>
 						<h2>Plan diario</h2>
 						<span>$9.990</span>
@@ -357,8 +357,8 @@ export const Register = () => {
 				</div>
 			</label>
 			<label>
-				<input type="radio" name="plan" value="Mensual" onChange={handleInputChange} onClick={handlePlanReset} checked={formData.plan === "Mensual"} style={{ display: "none" }} />
-				<div className=' p-[16px] rounded-lg mb-2 text-white-color transition-all border-2 border-monthly border-opacity-30' style={{ backgroundColor: formData.plan === "Mensual" ? "#438196" : "" }}>
+				<input type="radio" name="plan" value="PME" onChange={handleInputChange} onClick={handlePlanReset} checked={formData.plan === "PME"} style={{ display: "none" }} />
+				<div className=' p-[16px] rounded-lg mb-2 text-white-color transition-all border-2 border-monthly border-opacity-30' style={{ backgroundColor: formData.plan === "PME" ? "#438196" : "" }}>
 					<div className='flex justify-between mb-3'>
 						<h2>Plan mensual</h2>
 						<span>$31.990</span>
@@ -372,8 +372,8 @@ export const Register = () => {
 				</div>
 			</label>
 			<label>
-				<input type="radio" name="plan" value="Anual" onChange={handleInputChange} onClick={handlePlanReset} checked={formData.plan === "Anual"} style={{ display: "none" }} />
-				<div className=' p-[16px] rounded-lg text-white-color transition-all border-2 border-yearly border-opacity-30' style={{ backgroundColor: formData.plan === "Anual" ? "#38914F" : "" }}>
+				<input type="radio" name="plan" value="PAN" onChange={handleInputChange} onClick={handlePlanReset} checked={formData.plan === "PAN"} style={{ display: "none" }} />
+				<div className=' p-[16px] rounded-lg text-white-color transition-all border-2 border-yearly border-opacity-30' style={{ backgroundColor: formData.plan === "PAN" ? "#38914F" : "" }}>
 					<div className='flex justify-between mb-3'>
 						<h2>Plan anual</h2>
 						<span>$229.900</span>
@@ -386,11 +386,11 @@ export const Register = () => {
 					</ul>
 				</div>
 			</label>
-			{formData.plan == "Diario" || formData.plan == "Mensual" || formData.plan == "Anual" ? (
+			{formData.plan == "PDI" || formData.plan == "PME" || formData.plan == "PAN" ? (
 				<button className='bg-purple-darker-color w-full text-white-color h-12 rounded-lg mt-4' onClick={handleNextStep}>Siguiente paso</button>
 			) : (
 				<label>
-					<input type="radio" name="plan" value="Otro" onChange={handleInputChange} onClick={handleNextStep} style={{ display: "none" }} />
+					<input type="radio" name="plan" value="PES" onChange={handleInputChange} onClick={handleNextStep} style={{ display: "none" }} />
 					<p className='text-center text-[15px] text-text-color mt-6 cursor-pointer' >No necesito un plan (Aplican tarifas planas)</p>
 				</label>
 			)}
