@@ -1,41 +1,85 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../Root';
 import updateData from '../Auth/components/updateData';
+import { IoBicycle } from "react-icons/io5";
 
 export const Perfil = () => {
-  const { isLoggedIn, userData, setUserData } = useContext(AuthContext);
-  const navigate = useNavigate();
+	const { isLoggedIn, userData, setUserData } = useContext(AuthContext);
+	const [estacionesDisponibles, setEstacionesDisponibles] = useState([{ nombre: 'Hola' }, { nombre: 'Hola' }])
+	const navigate = useNavigate();
 
-  const fetchUserData = async () => {
-    const newUserData = await updateData(userData.k_idUsuario);
-    setUserData(newUserData);
-  };
+	const fetchUserData = async () => {
+		const newUserData = await updateData(userData.k_idUsuario);
+		console.log(newUserData)
+		setUserData(newUserData);
+	};
 
-  useEffect(() => {
-    if (!isLoggedIn) {
-      navigate('/login');
-    } else {
-		console.log(userData)
-      fetchUserData();
-    }
-  }, [isLoggedIn, navigate]);
-
-  const planColor = () => {
-	switch (userData.k_idPlan){
-		case 1:
-			return 'bg-daily'
-		case 2:
-			return 'bg-monthly'
-		case 3:
-			return 'bg-yearly'
+	const fetchEstaciones = async () => {
+		const getEstaciones = await getEstaciones();
+		setEstacionesDisponibles(getEstaciones);
 	}
-  }
 
-  return (
-    <div className="p-16">
-      <h2 className='text-white-color text-2xl font-semibold'>Hola, {userData.n_nombre1}.</h2>
-	  <span className={`p-3 ${planColor} `}>Plan {}</span>
-    </div>
-  );
+	useEffect(() => {
+		if (!isLoggedIn) {
+			navigate('/login');
+		} else {
+			fetchUserData();
+		}
+	}, [isLoggedIn, navigate]);
+
+	const planColor = () => {
+		switch (userData.k_idPlan) {
+			case "PDI":
+				return 'bg-daily';
+			case "PME":
+				return 'bg-monthly';
+			case "PAN":
+				return 'bg-yearly';
+			case "PES":
+				return 'bg-bg-color';
+		}
+	}
+
+	const randomColor = () => {
+		const elementos = ['bg-brown', 'bg-monthly', 'bg-yearly', 'bg-orange', 'bg-red'];
+		const indiceAleatorio = Math.floor(Math.random() * elementos.length);
+		return elementos[indiceAleatorio];
+	}
+
+	return (
+		<div className="p-16 w-full">
+			<div>
+				<h2 className='text-white-color text-2xl font-semibold'>Hola, {userData.n_nombre1}.</h2>
+				<div className='flex gap-x-5'>
+					<p className={`p-2 w-1/2 text-[15px] text-center text-white-color mt-4 rounded-md ${planColor()} `}>{userData.n_planServicio}</p>
+					<p className={`p-2 w-1/2 text-[15px] text-center text-white-color mt-4 rounded-md bg-purple-color `}>Saldo: ${userData.v_saldoFinal}</p>
+				</div>
+			</div>
+			<div className='mt-8 text-text-color'>
+				{estacionesDisponibles.length > 0 ? (
+					<div>
+						<div className='flex items-center'>
+							<IoBicycle className='mr-2 text-lg'></IoBicycle>
+							<h2 className='text-lg'>Hacer nuevo viaje</h2>
+						</div>
+						<p className='mt-1 ml-1 text-[15px]'>Estaciones disponibles para viajar:</p>
+						<ul className='mt-4'>
+							{estacionesDisponibles.map((estacion) => (
+								<li className={`w-full p-5 ${randomColor()} mb-4 rounded-md cursor-pointer transition-all hover:translate-x-1 hover:-translate-y-1 hover:shadow-xl`}
+									key={estacion.id}>
+									<p>{estacion.nombre}</p>
+									<p className='text-sm'>{estacion.nombre}</p>
+								</li>
+							))}
+						</ul>
+					</div>
+				) : (
+					<div>
+						<p className='bg-purple-darker-color text-center p-3 rounded-md mt-5'>No hay estaciones disponibles</p>
+					</div>
+				)}
+			</div>
+		</div>
+	);
 };

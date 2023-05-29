@@ -2,6 +2,7 @@ import express from 'express';
 import pkg from 'pg';
 import cors from 'cors';
 import { createHash } from 'crypto';
+import { pid } from 'process';
 
 const { Pool } = pkg;
 const app = express();
@@ -43,9 +44,13 @@ app.post('/register', async (req, res) => {
 		const planQuery = 'SELECT * FROM "planServicio" WHERE "k_idPlan" = $1';
 		const planValues = [plan];
 		const resultado = await pool.query(planQuery, planValues);
-		console.log(resultado.rows[0]);
+		const { k_idPlan, v_valorBase } = resultado.rows[0];
 
-		res.send('Datos de registro insertados correctamente');
+		const cuentaQuery = 'INSERT INTO cuenta ("v_saldoInicial", "v_saldoFinal", i_estado, "k_idUsuario", "k_tipoId", "k_idPlan", "v_saldoPendiente") VALUES ($1, $2, $3, $4, $5, $6, $7)';
+		const cuentaValues = [v_valorBase, v_valorBase, 'ACTIV', numeroID, tipoID, k_idPlan, 0];
+		await pool.query(cuentaQuery, cuentaValues);
+
+		res.send('Registrado');
 	} catch (error) {
 		console.error(error);
 		res.send(error);
@@ -74,13 +79,37 @@ app.post('/getUser', async (req, res) => {
 	try {
 		const { userID } = req.body;
 
-		const loginQuery = 'SELECT * FROM usuario WHERE "k_idUsuario" = $1';
-		const loginValues = [userID];
-		const result = await pool.query(loginQuery, loginValues);
+		const query = `
+		SELECT usuario.*, cuenta.*, "planServicio".*
+		FROM usuario
+		JOIN cuenta ON usuario."k_idUsuario" = cuenta."k_idUsuario"
+		JOIN "planServicio" ON cuenta."k_idPlan" = "planServicio"."k_idPlan"
+		WHERE usuario."k_idUsuario" = $1
+	  `;
+		const values = [userID];
+
+		const result = await pool.query(query, values);
+
 		if (result.rowCount === 0) {
-			res.send(false)
+			res.send(false);
 		} else {
-			res.send(result.rows[0])
+			res.send(result.rows[0]);
+		}
+	} catch (error) {
+		console.error(error);
+		res.send(error);
+	}
+});
+
+app.post('/getEstacionesConBicicletas', async (req, res) => {
+	try {
+		const query = 'SELECT * FROM estacion WHERE "q_numeroBicicletas" > 0'
+		const result = await pool.query(query);
+
+		if (result.rowCount === 0) {
+			res.send(false);
+		} else {
+			res.send(result.rows);
 		}
 	} catch (error) {
 		console.error(error);

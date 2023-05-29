@@ -24,7 +24,10 @@ module.exports = {
 			'white-color': '#FFFFFF',
 			'daily': '#7F91E6',
 			'monthly': '#438196',
-			'yearly': '#38914F'
+			'yearly': '#38914F',
+			'brown': '#705647',
+			'orange': '#c25848',
+			'red': '#b5485f'
 		}
 	},
 	plugins: [],
