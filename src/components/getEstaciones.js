@@ -1,4 +1,4 @@
-const updateData = async (userID) => {
+const getEstaciones = async (userID) => {
 	try {
 	  const response = await fetch('http://localhost:3000/getEstacionesConBicicletas', {
 		method: 'POST',
@@ -23,4 +23,4 @@ const updateData = async (userID) => {
 	}
   };
 
-export default updateData;
+export default getEstaciones;

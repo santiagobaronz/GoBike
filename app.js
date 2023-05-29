@@ -44,7 +44,7 @@ app.post('/register', async (req, res) => {
 		const planQuery = 'SELECT * FROM "planServicio" WHERE "k_idPlan" = $1';
 		const planValues = [plan];
 		const resultado = await pool.query(planQuery, planValues);
-		const { k_idPlan, v_valorBase } = resultado.rows[0];
+		const { v_valorBase, k_idPlan } = resultado.rows[0];
 
 		const cuentaQuery = 'INSERT INTO cuenta ("v_saldoInicial", "v_saldoFinal", i_estado, "k_idUsuario", "k_tipoId", "k_idPlan", "v_saldoPendiente") VALUES ($1, $2, $3, $4, $5, $6, $7)';
 		const cuentaValues = [v_valorBase, v_valorBase, 'ACTIV', numeroID, tipoID, k_idPlan, 0];
@@ -115,6 +115,14 @@ app.post('/getEstacionesConBicicletas', async (req, res) => {
 		console.error(error);
 		res.send(error);
 	}
+});
+
+app.post('/iniciarViaje', async (req, res) => {
+	
+});
+
+app.post('/finalizarViaje', async (req, res) => {
+
 });
 
 

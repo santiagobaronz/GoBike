@@ -63,6 +63,13 @@ export const Login = () => {
 			if (response) {
 				setIsLoggedIn(true);
 				setUserData(response)
+
+				const sesion = {
+					userID: response.k_idUsuario,
+				};
+
+				localStorage.setItem('sesion', JSON.stringify(sesion));
+
 				navigate('/perfil');
 			}
 		}

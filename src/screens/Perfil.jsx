@@ -3,10 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../Root';
 import updateData from '../Auth/components/updateData';
 import { IoBicycle } from "react-icons/io5";
+import getEstacionesAPI from '../components/getEstaciones';
 
 export const Perfil = () => {
 	const { isLoggedIn, userData, setUserData } = useContext(AuthContext);
-	const [estacionesDisponibles, setEstacionesDisponibles] = useState([{ nombre: 'Hola' }, { nombre: 'Hola' }])
+	const [estacionesDisponibles, setEstacionesDisponibles] = useState([]);
 	const navigate = useNavigate();
 
 	const fetchUserData = async () => {
@@ -16,8 +17,8 @@ export const Perfil = () => {
 	};
 
 	const fetchEstaciones = async () => {
-		const getEstaciones = await getEstaciones();
-		setEstacionesDisponibles(getEstaciones);
+		const estaciones = await getEstacionesAPI();
+		setEstacionesDisponibles(estaciones);
 	}
 
 	useEffect(() => {
@@ -25,6 +26,7 @@ export const Perfil = () => {
 			navigate('/login');
 		} else {
 			fetchUserData();
+			fetchEstaciones();
 		}
 	}, [isLoggedIn, navigate]);
 
@@ -66,10 +68,19 @@ export const Perfil = () => {
 						<p className='mt-1 ml-1 text-[15px]'>Estaciones disponibles para viajar:</p>
 						<ul className='mt-4'>
 							{estacionesDisponibles.map((estacion) => (
-								<li className={`w-full p-5 ${randomColor()} mb-4 rounded-md cursor-pointer transition-all hover:translate-x-1 hover:-translate-y-1 hover:shadow-xl`}
-									key={estacion.id}>
-									<p>{estacion.nombre}</p>
-									<p className='text-sm'>{estacion.nombre}</p>
+								<li
+									className={`w-full p-5 ${randomColor()} mb-4 rounded-md cursor-pointer transition-all hover:translate-x-1 hover:-translate-y-1 hover:shadow-xl`}
+									key={estacion.k_idEstacion}
+								>
+									<div className='flex justify-between items-center'>
+										<div>
+											<p>{estacion.n_nombreEstacion}</p>
+											<p className='text-sm'>{estacion.n_direccion}</p>
+										</div>
+										<div className='bg-white-color rounded-full w-9 h-9 flex justify-center items-center'>
+											<p className='text-bg-color font-semibold text-center'>{estacion.q_numeroBicicletas}</p>
+										</div>
+									</div>
 								</li>
 							))}
 						</ul>
