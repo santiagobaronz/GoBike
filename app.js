@@ -220,7 +220,29 @@ app.post('/getEstacionesLibres', async (req, res) => {
 	}
 });
 
+app.post('/historial', async (req, res) => {
 
+	const { k_codigo} = req.body;
+
+	try {
+		const query = `SELECT v.*, e1."n_nombreEstacion" AS estacion_bloqueo_nombre, e1."n_direccion" AS estacion_bloqueo_direccion, e2."n_nombreEstacion" AS estacion_desbloqueo_nombre, e2."n_direccion" AS estacion_desbloqueo_direccion
+		FROM "viaje" v
+		LEFT JOIN "estacion" e1 ON v."n_idEstacionBloqueo" = e1."k_idEstacion"
+		LEFT JOIN "estacion" e2 ON v."n_idEstacionDesbloqueo" = e2."k_idEstacion"
+		WHERE v."k_codigo" = $1;`
+		const queryValues = [k_codigo]
+		const result = await pool.query(query, queryValues);
+
+		if (result.rowCount === 0) {
+			res.send(false);
+		} else {
+			res.send(result.rows);
+		}
+	} catch (error) {
+		console.error(error);
+		res.send(error);
+	}
+});
 
 
 app.post('/iniciarViaje', async (req, res) => {
@@ -323,14 +345,6 @@ app.post('/finalizarViaje', async (req, res) => {
 		const estacionViajeBicicletaQuery = 'INSERT INTO "estacionViajeBicicleta" ("k_idViaje", "k_idEstacion", "k_serieBicicleta", "i_tipoEvento") VALUES ($1, $2, $3, $4);';
 		const estacionViajeBicicletaValues = [viajeDataResult.k_idViaje, k_idEstacion, serieBicicletaValue, 'B'];
 		await pool.query(estacionViajeBicicletaQuery, estacionViajeBicicletaValues);
-
-		const estacionQuery = `UPDATE estacion SET "q_numeroBicicletas" = (SELECT COUNT(*) FROM "estacionBicicleta" 
-							WHERE "k_idEstacion" = $1 AND "i_estado" = 'D') 
-							WHERE "k_idEstacion" = $1`;
-		const estacionValues = [k_idEstacion];
-		await pool.query(estacionQuery, estacionValues);
-
-
 
 		res.send('Viaje iniciado');
 	} catch (error) {

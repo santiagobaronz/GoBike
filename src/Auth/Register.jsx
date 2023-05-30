@@ -36,7 +36,7 @@ export const Register = () => {
 	const registerUser = async () => {
 		const result = await registerUserDB(formData);
 		setResultRegister(result);
-		setTimeout(function () { window.location.href = "/login"; }, 3000);
+		setTimeout(function () { window.location.href = "/login"; }, 500);
 	}
 
 	const handleInputChange = (event) => {
