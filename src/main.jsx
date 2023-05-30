@@ -9,6 +9,7 @@ import { Inicio } from './screens/Inicio'
 import { Login } from './Auth/Login'
 import { Register } from './Auth/Register'
 import { Perfil } from './screens/Perfil'
+import { Viaje } from './screens/Viaje'
 
 const router = createBrowserRouter([
 	{
@@ -19,6 +20,7 @@ const router = createBrowserRouter([
 		{ path: 'login', element: <Login/> },
 		{ path: 'register', element: <Register/> },
 		{ path: 'perfil', element: <Perfil/> },
+		{ path: 'nuevo-viaje/:estacionID', element: <Viaje/> },
 		,
 	  ]
 	}

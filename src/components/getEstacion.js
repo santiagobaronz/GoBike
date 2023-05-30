@@ -1,17 +1,17 @@
-export const getEstaciones = async (userID) => {
+const getEstacion = async (estacionID) => {
 	try {
-	  const response = await fetch('http://localhost:3000/getEstacionesConBicicletas', {
+	  const response = await fetch('http://localhost:3000/getEstacion', {
 		method: 'POST',
 		headers: {
 		  'Content-Type': 'application/json',
 		},
-		body: JSON.stringify({ userID }),
+		body: JSON.stringify({ estacionID }),
 	  });
   
 	  if (response.ok) {
 		const data = await response.json();
 		if (data) {
-		  return data;
+		  return data[0];
 		} else {
 		  return false;
 		}
@@ -23,4 +23,4 @@ export const getEstaciones = async (userID) => {
 	}
   };
 
-export default getEstaciones;
+export default getEstacion;
