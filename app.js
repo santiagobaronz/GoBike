@@ -116,7 +116,7 @@ class DAO {
 	}
 
 
-	static async verificarDocumento(info){
+	static async verificarDocumento(info) {
 
 		const { documentoParaRevisar } = info;
 
@@ -150,7 +150,7 @@ class DAO {
 			const { v_valorBase, k_idPlan } = resultado.rows[0];
 
 			const cuentaQuery = 'INSERT INTO cuenta ("v_saldoInicial", "v_saldoFinal", i_estado, "k_idUsuario", "k_tipoId", "k_idPlan", "v_saldoPendiente") VALUES ($1, $2, $3, $4, $5, $6, $7)';
-			const cuentaValues = [v_valorBase, v_valorBase, 'ACTIV', numeroID, tipoID, k_idPlan, 0];
+			const cuentaValues = [v_valorBase, 0, 'ACTIV', numeroID, tipoID, k_idPlan, 0];
 			await pool.query(cuentaQuery, cuentaValues);
 
 			return true;
@@ -183,14 +183,13 @@ class DAO {
 			const { userID } = info;
 
 			const query = `
-			SELECT usuario.*, cuenta.*, "planServicio".*
-			FROM usuario
-			JOIN cuenta ON usuario."k_idUsuario" = cuenta."k_idUsuario"
-			JOIN "planServicio" ON cuenta."k_idPlan" = "planServicio"."k_idPlan"
-			WHERE usuario."k_idUsuario" = $1
-		  `;
+    SELECT usuario.*, cuenta.*, "planServicio".*, (4 - COALESCE((SELECT COUNT(*) FROM "viaje" WHERE "k_codigo" = cuenta."k_codigo" AND DATE("f_desbloqueo") = CURRENT_DATE), 0)) AS viajes_disponibles
+    FROM usuario
+    JOIN cuenta ON usuario."k_idUsuario" = cuenta."k_idUsuario"
+    JOIN "planServicio" ON cuenta."k_idPlan" = "planServicio"."k_idPlan"
+    WHERE usuario."k_idUsuario" = $1
+`;
 			const values = [userID];
-
 			const result = await pool.query(query, values);
 
 			if (result.rowCount === 0) {
@@ -286,16 +285,12 @@ class DAO {
 				q_numeroViajes, v_saldoFinal, v_saldoInicial, v_saldoPendiente,
 				v_valorBase } = info.dataToSend;
 
-			
-
 			const codigoViaje = generarCodigo();
 			const fechaActual = obtenerFechaActual();
 			const horaActual = obtenerTiempoActual();
 
 			let valorSacada;
 			let valorMinuto;
-
-			console.log('Inicio viaje:' + codigoViaje)
 
 			const serieBicicletaQuery = 'SELECT "k_serieBicicleta" FROM "estacionBicicleta" WHERE "k_idEstacion" = $1 ORDER BY RANDOM() LIMIT 1;';
 			const serieBicicletaValues = [k_idEstacion];
@@ -353,9 +348,6 @@ class DAO {
 			const viajeDataQuery = `SELECT * FROM viaje WHERE k_codigo = $1 AND "n_idEstacionBloqueo" IS NULL`;
 			const viajeDataValues = [k_codigo];
 			const viajeDataResult = (await pool.query(viajeDataQuery, viajeDataValues)).rows[0];
-			console.log('Final viaje:' + viajeDataResult.k_idViaje)
-
-			
 
 			const fechaActual = obtenerFechaActual();
 			const horaActual = obtenerTiempoActual();
@@ -368,23 +360,57 @@ class DAO {
 			const tipoBicicletaValue = tipoBicicleta.rows[0].n_tipo;
 			const serieBicicletaValue = tipoBicicleta.rows[0].k_serieBicicleta;
 
+			const numeroViajesQuery = 'SELECT COUNT(*) AS total_viajes FROM "viaje" WHERE "k_codigo" = $1 AND DATE("f_desbloqueo") = CURRENT_DATE;';
+			const numeroViajesValues = [k_codigo];
+			const numeroViajesValue = await pool.query(numeroViajesQuery, numeroViajesValues);
+
+
 			if (tipoBicicletaValue == 'MECANICA') {
 				valorTotal = (info.dataToSend['v_valorRetiro.mecanico']) + ((info.dataToSend['v_valorMinuto.mecanico']) * minutosExtra);
 			} else {
 				valorTotal = (info.dataToSend['v_valorRetiro.electrico']) + ((info.dataToSend['v_valorMinuto.electrico']) * minutosExtra);
 			}
 
+			if (numeroViajesValue.rows[0].total_viajes > 4) { 
+				valorTotal = valorTotal + 3990;
+			}
+
+			console.log('valor total' + valorTotal);
+
+
 			const viajeQuery = `UPDATE "viaje" SET "f_bloqueo" = $1, "v_total" = $2, "o_horaFin" = $3, "o_duracion" = $4, "q_minutosAdicionales" = $5, "n_idEstacionBloqueo" = $6 WHERE "k_idViaje" = $7;`;
 			const viajeValues = [fechaActual, valorTotal, horaActual, diferenciaTiempo, minutosExtra, k_idEstacion, viajeDataResult.k_idViaje];
 			await pool.query(viajeQuery, viajeValues);
 
-			const estacionBicicletaQuery = 'INSERT INTO "estacionBicicleta" ("k_idEstacion", "k_serieBicicleta", "i_estado") VALUES ($1, $2, $3);';
-			const estacionBicicletaValues = [k_idEstacion, serieBicicletaValue, 'D'];
-			await pool.query(estacionBicicletaQuery, estacionBicicletaValues);
+			const cuentaQuery = `UPDATE "cuenta" SET "v_saldoPendiente" = ("v_saldoPendiente" + $1), "v_saldoFinal" = ("v_saldoFinal" - $1 ) WHERE "k_codigo" = $2;`;
+			const cuentaValues = [valorTotal, k_codigo];
+			await pool.query(cuentaQuery, cuentaValues);
 
-			const estacionViajeBicicletaQuery = 'INSERT INTO "estacionViajeBicicleta" ("k_idViaje", "k_idEstacion", "k_serieBicicleta", "i_tipoEvento") VALUES ($1, $2, $3, $4);';
-			const estacionViajeBicicletaValues = [viajeDataResult.k_idViaje, k_idEstacion, serieBicicletaValue, 'B'];
-			await pool.query(estacionViajeBicicletaQuery, estacionViajeBicicletaValues);
+
+			if (viajeDataResult.n_idEstacionDesbloqueo != k_idEstacion) {
+				const estacionBicicletaQuery = 'INSERT INTO "estacionBicicleta" ("k_idEstacion", "k_serieBicicleta", "i_estado") VALUES ($1, $2, $3);';
+				const estacionBicicletaValues = [k_idEstacion, serieBicicletaValue, 'D'];
+				await pool.query(estacionBicicletaQuery, estacionBicicletaValues);
+
+				const estacionViajeBicicletaQuery = 'INSERT INTO "estacionViajeBicicleta" ("k_idViaje", "k_idEstacion", "k_serieBicicleta", "i_tipoEvento") VALUES ($1, $2, $3, $4);';
+				const estacionViajeBicicletaValues = [viajeDataResult.k_idViaje, k_idEstacion, serieBicicletaValue, 'B'];
+				await pool.query(estacionViajeBicicletaQuery, estacionViajeBicicletaValues);
+			} else {
+				const estacionBicicletaQuery = 'UPDATE "estacionBicicleta" SET "i_estado" = $1 WHERE "k_idEstacion" = $2 AND "k_serieBicicleta" = $3;';
+				const estacionBicicletaValues = ['D', k_idEstacion, serieBicicletaValue];
+				await pool.query(estacionBicicletaQuery, estacionBicicletaValues);
+
+				const estacionViajeBicicletaQuery = 'UPDATE "estacionViajeBicicleta" SET "i_tipoEvento" = $1 WHERE "k_idViaje" = $2';
+				const estacionViajeBicicletaValues = ['B', viajeDataResult.k_idViaje];
+				await pool.query(estacionViajeBicicletaQuery, estacionViajeBicicletaValues);
+
+			}
+
+			const estacionQuery = `UPDATE estacion SET "q_numeroBicicletas" = (SELECT COUNT(*) FROM "estacionBicicleta" 
+								WHERE "k_idEstacion" = $1 AND "i_estado" = 'D') 
+								WHERE "k_idEstacion" = $1`;
+			const estacionValues = [k_idEstacion];
+			await pool.query(estacionQuery, estacionValues);
 
 			return true;
 		} catch (error) {

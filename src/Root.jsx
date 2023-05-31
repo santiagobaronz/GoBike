@@ -21,7 +21,6 @@ export const Root = () => {
 
 	useEffect(() => {
 		const sesionGuardada = localStorage.getItem('sesion');
-		console.log(location)
 		if (!sesionGuardada && location.pathname != '/') {
 			navigate('/login');
 		} else {

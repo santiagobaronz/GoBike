@@ -7,7 +7,7 @@ import getEstaciones from '../components/getEstaciones';
 import getHistorial from '../components/getHistorial';
 
 export const Perfil = () => {
-	const { isLoggedIn, userData, setUserData } = useContext(AuthContext);
+	const { isLoggedIn, userData,setIsLoggedIn, setUserData } = useContext(AuthContext);
 	const [estacionesDisponibles, setEstacionesDisponibles] = useState([]);
 	const [historialViajes, setHistorialViajes] = useState([])
 	const navigate = useNavigate();
@@ -61,27 +61,38 @@ export const Perfil = () => {
 		const year = date.getFullYear();
 		const month = String(date.getMonth() + 1).padStart(2, '0');
 		const day = String(date.getDate()).padStart(2, '0');
-		
+
 		return `${year}-${month}-${day}`;
-	  }
+	}
+
+	function calcularDiasRestantes(){
+		const dias = userData.viajes_disponibles;
+		if(dias >= 0){
+			return `Quedan ${dias} viajes hoy`;
+		}else{
+			return 'No quedan más viajes'
+		}
+	}
 
 
 	const handleLogout = () => {
 		localStorage.removeItem('sesion');
+		setUserData([])
+		setIsLoggedIn(false)
 		navigate('/');
 	};
 
 	return (
 		<div className="p-16 w-full">
 			<div>
-				<div className='flex justify-between'>
+				<div>
 					<h2 className='text-white-color text-2xl font-semibold'>Hola, {userData.n_nombre1}.</h2>
-					<button className='text-red text-sm' onClick={handleLogout}>Cerrar sesión</button>
+					<p className={`p-2 w-full text-[15px] text-center text-white-color mt-4 rounded-md ${planColor()} `}>{userData.n_planServicio} - {calcularDiasRestantes()} </p>
 				</div>
-				
+
 				<div className='flex gap-x-5'>
-					<p className={`p-2 w-1/2 text-[15px] text-center text-white-color mt-4 rounded-md ${planColor()} `}>{userData.n_planServicio}</p>
 					<p className={`p-2 w-1/2 text-[15px] text-center text-white-color mt-4 rounded-md bg-purple-color `}>Saldo: ${userData.v_saldoFinal}</p>
+					<button className='p-2 w-1/2 text-[15px] text-center text-white-color mt-4 rounded-md bg-red' onClick={handleLogout}>Cerrar sesión</button>
 				</div>
 			</div>
 			<div className='mt-8 text-text-color'>
@@ -122,31 +133,33 @@ export const Perfil = () => {
 					<h2 className='text-lg'>Historial de viajes</h2>
 				</div>
 				<p className='mt-1 ml-1 text-[15px]'>Tu recuento de viajes:</p>
-				{historialViajes.length > 0 ? (
-					<div>
-						<ul className='mt-4'>
-							{historialViajes.map((viaje) => (
-								<li
-									className={`w-full p-5 ${randomColor()} mb-4 rounded-md cursor-pointer transition-all hover:translate-x-0.5 hover:-translate-y-0.5 hover:shadow-xl`}
-									key={viaje.k_idViaje}
-								>
-									<div className='flex justify-between items-center'>
-										<div>
-											<p className='text-sm'>{viaje.estacion_desbloqueo_nombre}</p>
-											<p className='text-sm'>{viaje.estacion_bloqueo_nombre}</p>
-											<p className='text-sm'>{formatDate(viaje.f_desbloqueo)}</p>
-											<p className='text-sm'>Precio por viaje: ${viaje.v_total}</p>
+				<div className='pb-10'>
+					{historialViajes.length > 0 ? (
+						<div>
+							<ul className='mt-4'>
+								{historialViajes.map((viaje) => (
+									<li
+										className={`w-full p-5 ${randomColor()} mb-4 rounded-md cursor-pointer transition-all hover:translate-x-0.5 hover:-translate-y-0.5 hover:shadow-xl`}
+										key={viaje.k_idViaje}
+									>
+										<div className='flex justify-between items-center'>
+											<div>
+												<p className='text-sm'>{viaje.estacion_desbloqueo_nombre}</p>
+												<p className='text-sm'>{viaje.estacion_bloqueo_nombre}</p>
+												<p className='text-sm'>{formatDate(viaje.f_desbloqueo)}</p>
+												<p className='text-sm'>Precio por viaje: ${viaje.v_total}</p>
+											</div>
 										</div>
-									</div>
-								</li>
-							))}
-						</ul>
-					</div>
-				) : (
-					<div>
-						<p className='bg-purple-darker-color text-center p-3 rounded-md mt-5'>No hay viajes realizados</p>
-					</div>
-				)}
+									</li>
+								))}
+							</ul>
+						</div>
+					) : (
+						<div>
+							<p className='bg-purple-darker-color text-center p-3 rounded-md mt-5'>No hay viajes realizados</p>
+						</div>
+					)}
+				</div>
 			</div>
 		</div>
 	);

@@ -71,51 +71,57 @@ export const Viaje = () => {
 
 	var countdownTime = convertirHoraASegundos(userData.o_tiempoViaje);
 
+	let countdownInterval;
+
 	function updateCountdown() {
 		var hours = Math.floor(countdownTime / 3600);
 		var minutes = Math.floor((countdownTime % 3600) / 60);
 		var seconds = countdownTime % 60;
-
+	  
 		hours = hours < 10 ? "0" + hours : hours;
 		minutes = minutes < 10 ? "0" + minutes : minutes;
 		seconds = seconds < 10 ? "0" + seconds : seconds;
 		var time = hours + ":" + minutes + ":" + seconds;
-
-		document.getElementById("countdown").innerText = time;
-		countdownTime--;
-
-		if (countdownTime < 0) {
-			clearInterval(countdownInterval);
-			document.getElementById("countdown").innerText = "¡Tiempo finalizado!";
+	  
+		var countdownElement = document.getElementById("countdown");
+		if (countdownElement) {
+		  countdownElement.innerText = time;
 		}
-	}
+	  
+		countdownTime--;
+	  
+		if (countdownTime < 0) {
+		  clearInterval(countdownInterval);
+	  
+		  if (countdownElement) {
+			countdownElement.innerText = "¡Tiempo finalizado!";
+		  }
+		}
+	  }
 
+	
 	const iniciarViaje = async () => {
-		setEnViaje(true)
-		var countdownInterval = setInterval(updateCountdown, 1000);
+		setEnViaje(true);
+		countdownInterval = setInterval(updateCountdown, 1000);
 		await iniciarNuevoViaje(userData, estacionSeleccionada);
 		await fetchEstacionesDisponibles();
-	}
-
-	const popAlertFinalizar = (codigoEstacion) => {
-		setPopUp(true)
-		setEstacionFinalizacion(codigoEstacion)
-	}
-
-	const finalizarViaje = async () => {
-		const estacionToSend = await fetchEstacionFinalizacionData(estacionFinalizacion)
-		finalizarNuevoViaje(userData, estacionToSend)
+	  }
+	  
+	  const popAlertFinalizar = (codigoEstacion) => {
+		setPopUp(true);
+		setEstacionFinalizacion(codigoEstacion);
+	  }
+	  
+	  const finalizarViaje = async () => {
+		const estacionToSend = await fetchEstacionFinalizacionData(estacionFinalizacion);
+		finalizarNuevoViaje(userData, estacionToSend);
+		// Limpiar el intervalo antes de navegar a '/perfil'
+		clearInterval(countdownInterval);
 		navigate('/perfil');
-	}
+	  }
 
 	return (
 		<div className="p-16 w-full relative">
-			<Link to={'/perfil'}>
-				<button className='absolute right-10 top-12 bg-purple-color p-3 text-2xl flex justify-center items-center text-white-color  rounded-full'>
-					<MdKeyboardBackspace></MdKeyboardBackspace>
-				</button>
-			</Link>
-
 			<div>
 				{popUp && (
 					<div className='absolute z-50 bg-app-color text-white-color w-4/6 left-[75px] p-10 rounded-xl bottom-16'>
