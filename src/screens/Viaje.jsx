@@ -69,56 +69,54 @@ export const Viaje = () => {
 		}
 	}
 
-	var countdownTime = convertirHoraASegundos(userData.o_tiempoViaje);
-
+	let countdownTime = convertirHoraASegundos(userData.o_tiempoViaje);
 	let countdownInterval;
 
 	function updateCountdown() {
 		var hours = Math.floor(countdownTime / 3600);
 		var minutes = Math.floor((countdownTime % 3600) / 60);
 		var seconds = countdownTime % 60;
-	  
+
 		hours = hours < 10 ? "0" + hours : hours;
 		minutes = minutes < 10 ? "0" + minutes : minutes;
 		seconds = seconds < 10 ? "0" + seconds : seconds;
 		var time = hours + ":" + minutes + ":" + seconds;
-	  
+
 		var countdownElement = document.getElementById("countdown");
 		if (countdownElement) {
-		  countdownElement.innerText = time;
+			countdownElement.innerText = time;
 		}
-	  
-		countdownTime--;
-	  
-		if (countdownTime < 0) {
-		  clearInterval(countdownInterval);
-	  
-		  if (countdownElement) {
-			countdownElement.innerText = "¡Tiempo finalizado!";
-		  }
-		}
-	  }
 
-	
+		countdownTime--;
+
+		if (countdownTime < 0) {
+			clearInterval(countdownInterval);
+
+			if (countdownElement) {
+				countdownElement.innerText = "¡Tiempo finalizado!";
+			}
+		}
+	}
+
 	const iniciarViaje = async () => {
 		setEnViaje(true);
 		countdownInterval = setInterval(updateCountdown, 1000);
 		await iniciarNuevoViaje(userData, estacionSeleccionada);
 		await fetchEstacionesDisponibles();
-	  }
-	  
-	  const popAlertFinalizar = (codigoEstacion) => {
+	}
+
+	const popAlertFinalizar = (codigoEstacion) => {
 		setPopUp(true);
 		setEstacionFinalizacion(codigoEstacion);
-	  }
-	  
-	  const finalizarViaje = async () => {
+	}
+
+	const finalizarViaje = async () => {
 		const estacionToSend = await fetchEstacionFinalizacionData(estacionFinalizacion);
 		finalizarNuevoViaje(userData, estacionToSend);
 		// Limpiar el intervalo antes de navegar a '/perfil'
 		clearInterval(countdownInterval);
 		navigate('/perfil');
-	  }
+	}
 
 	return (
 		<div className="p-16 w-full relative">
@@ -128,7 +126,7 @@ export const Viaje = () => {
 						<h2 className='text-center mb-6'>¿Seguro que desea finalizar el viaje?</h2>
 						<div className='flex gap-x-5 justify-between'>
 							<button className='text-center border w-full h-10 rounded-md' onClick={finalizarViaje}>Finalizar</button>
-							<button className='text-center bg-orange w-full h-10 rounded-md' onClick={() => {setPopUp(false); setEstacionFinalizacion('')}}>Cancelar</button>
+							<button className='text-center bg-orange w-full h-10 rounded-md' onClick={() => { setPopUp(false); setEstacionFinalizacion('') }}>Cancelar</button>
 						</div>
 					</div>
 				)}
@@ -164,7 +162,7 @@ export const Viaje = () => {
 						<h4 className='text-text-color font-medium'>Estaciones libres:</h4>
 						<ul className='mt-4 text-white-color'>
 							{estacionesLibres.map((estacion) => (
-								<li onClick={() => {popAlertFinalizar(estacion.k_idEstacion)}} className={`w-full p-5 ${randomColor()} mb-4 rounded-md cursor-pointer transition-all hover:translate-x-0.5 hover:-translate-y-0.5 hover:shadow-xl`} key={estacion.k_idEstacion}>
+								<li onClick={() => { popAlertFinalizar(estacion.k_idEstacion) }} className={`w-full p-5 ${randomColor()} mb-4 rounded-md cursor-pointer transition-all hover:translate-x-0.5 hover:-translate-y-0.5 hover:shadow-xl`} key={estacion.k_idEstacion}>
 									<div className=''>
 										<div>
 											<p>{estacion.n_nombreEstacion}</p>
