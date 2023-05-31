@@ -11,32 +11,36 @@ export const Register = () => {
 	const [tooltip, setTooltip] = useState(false);
 	const [errorFields, setErrorFields] = useState([]);
 	const [resultRegister, setResultRegister] = useState();
+
+	const [correoCheck, setCorreoCheck] = useState(false)
+	const [documentoCheck, setDocumentoCheck] = useState(false)
+
 	const [formData, setFormData] = useState({
-		nombres: '',
-		apellidos: '',
-		correo: '',
-		contrasena: '',
-		nacionalidad: '',
-		tipoID: '',
-		numeroID: '',
-		fechaNacimiento: '',
-		sexo: '',
-		telefono: '',
-		eps: '',
-		plan: '',
-		titularTarjeta: '',
-		tipoTarjeta: '',
-		numeroTarjeta: '',
-		mesTarjeta: '',
-		yearTarjeta: '',
-		codigoTarjeta: '',
+		nombres: 'Santiago',
+		apellidos: 'Baron',
+		correo: 'sbz@correo.com',
+		contrasena: 'Prueba1234#',
+		nacionalidad: 'Colombia',
+		tipoID: 'CC',
+		numeroID: '1000860323',
+		fechaNacimiento: '2003-06-07',
+		sexo: 'M',
+		telefono: '3203773769',
+		eps: 'Compensar',
+		plan: 'PDI',
+		titularTarjeta: 'Santiago',
+		tipoTarjeta: 'DEB',
+		numeroTarjeta: '1234123412341234',
+		mesTarjeta: '12',
+		yearTarjeta: '23',
+		codigoTarjeta: '1234',
 
 	});
 
 	const registerUser = async () => {
 		const result = await registerUserDB(formData);
 		setResultRegister(result);
-		setTimeout(function () { window.location.href = "/login"; }, 500);
+		setTimeout(function () { window.location.href = "/login"; }, 1500);
 	}
 
 	const handleInputChange = (event) => {
@@ -65,34 +69,37 @@ export const Register = () => {
 		}
 	};
 
-	const handleNextStep = () => {
+	const handleNextStep = async () => {
 
 		let hasErrors = false;
 		const fieldsWithErrors = [];
 
 		if (step == 1) {
 
-			if (!validateData(formData.nombres, 'dataText')) {
+
+
+			if (!await validateData(formData.nombres, 'dataText')) {
 				hasErrors = true;
 				fieldsWithErrors.push('nombres');
 			}
 
-			if (!validateData(formData.apellidos, 'dataText')) {
+			if (!await validateData(formData.apellidos, 'dataText')) {
 				hasErrors = true;
 				fieldsWithErrors.push('apellidos');
 			}
 
-			if (!validateData(formData.correo, 'dataEmail')) {
+			if (await validateData(formData.correo, 'dataEmail')) {
 				hasErrors = true;
+				setCorreoCheck(true)
 				fieldsWithErrors.push('correo');
 			}
 
-			if (!validateData(formData.contrasena, 'dataPassword')) {
+			if (!await validateData(formData.contrasena, 'dataPassword')) {
 				hasErrors = true;
 				fieldsWithErrors.push('contrasena');
 			}
 
-			if (!validateData(formData.nacionalidad, 'dataText')) {
+			if (!await validateData(formData.nacionalidad, 'dataText')) {
 				hasErrors = true;
 				fieldsWithErrors.push('nacionalidad');
 			}
@@ -100,54 +107,55 @@ export const Register = () => {
 
 		if (step == 2) {
 
-			if (!validateData(formData.tipoID, 'dataText')) {
+			if (!await validateData(formData.tipoID, 'dataText')) {
 				hasErrors = true;
 				fieldsWithErrors.push('tipoID');
 			}
-			if (!validateData(formData.numeroID, 'dataNumber')) {
+			if (await validateData(formData.numeroID, 'dataID')) {
 				hasErrors = true;
+				setDocumentoCheck(true)
 				fieldsWithErrors.push('numeroID');
 			}
-			if (!validateData(formData.fechaNacimiento, 'dataDate')) {
+			if (!await validateData(formData.fechaNacimiento, 'dataDate')) {
 				hasErrors = true;
 				fieldsWithErrors.push('fechaNacimiento');
 			}
-			if (!validateData(formData.sexo, 'dataText')) {
+			if (!await validateData(formData.sexo, 'dataText')) {
 				hasErrors = true;
 				fieldsWithErrors.push('sexo');
 			}
-			if (!validateData(formData.telefono, 'dataPhone')) {
+			if (!await validateData(formData.telefono, 'dataPhone')) {
 				hasErrors = true;
 				fieldsWithErrors.push('telefono');
 			}
-			if (!validateData(formData.eps, 'dataText')) {
+			if (!await validateData(formData.eps, 'dataText')) {
 				hasErrors = true;
 				fieldsWithErrors.push('eps');
 			}
 		}
 
 		if (step == 4) {
-			if (!validateData(formData.titularTarjeta, 'dataText')) {
+			if (!await validateData(formData.titularTarjeta, 'dataText')) {
 				hasErrors = true;
 				fieldsWithErrors.push('titularTarjeta');
 			}
-			if (!validateData(formData.tipoTarjeta, 'dataText')) {
+			if (!await validateData(formData.tipoTarjeta, 'dataText')) {
 				hasErrors = true;
 				fieldsWithErrors.push('tipoTarjeta');
 			}
-			if (!validateData(formData.numeroTarjeta, 'dataCard')) {
+			if (!await validateData(formData.numeroTarjeta, 'dataCard')) {
 				hasErrors = true;
 				fieldsWithErrors.push('numeroTarjeta');
 			}
-			if (!validateData(formData.mesTarjeta, 'dataMonth')) {
+			if (!await validateData(formData.mesTarjeta, 'dataMonth')) {
 				hasErrors = true;
 				fieldsWithErrors.push('mesTarjeta');
 			}
-			if (!validateData(formData.yearTarjeta, 'dataYear')) {
+			if (!await validateData(formData.yearTarjeta, 'dataYear')) {
 				hasErrors = true;
 				fieldsWithErrors.push('yearTarjeta');
 			}
-			if (!validateData(formData.codigoTarjeta, 'dataNumber')) {
+			if (!await validateData(formData.codigoTarjeta, 'dataNumber')) {
 				hasErrors = true;
 				fieldsWithErrors.push('codigoTarjeta');
 			}
@@ -160,6 +168,8 @@ export const Register = () => {
 			setErrorFields([]);
 			if (step != 4) {
 				setStep(step + 1);
+				setCorreoCheck(false)
+				setDocumentoCheck(false);
 			} else {
 				registerUser();
 			}
@@ -192,15 +202,28 @@ export const Register = () => {
 				placeholder='Ingresa tus apellidos completos'
 			/>
 
-			<label className='font-semibold text-[15.5px] text-text-color'>Correo electrónico</label>
-			<input
-				className={`h-11 pl-5 bg-bg-color text-text-color rounded-md mt-2 w-full mb-5 ${errorFields.includes('correo') ? 'error' : ''}`}
-				type='mail'
-				name='correo'
-				value={formData.correo}
-				onChange={handleInputChange}
-				placeholder='Ingresa tu correo electrónico'
-			/>
+			<div className='relative'>
+
+				{correoCheck && (
+					<div className='relative'>
+						<div className='absolute bg-purple-darker-color py-3 px-2 text-sm -top-9 right-2 z-20 rounded-md text-white-color'>
+							<p>Este correo ya existe</p>
+						</div>
+						<div className='absolute h-5 w-5 -bottom-4 right-7 transform rotate-45 bg-purple-darker-color'></div>
+					</div>
+				)}
+
+				<label className='font-semibold text-[15.5px] text-text-color'>Correo electrónico</label>
+				<input
+					className={`h-11 pl-5 bg-bg-color text-text-color rounded-md mt-2 w-full mb-5 ${errorFields.includes('correo') ? 'error' : ''}`}
+					type='mail'
+					name='correo'
+					value={formData.correo}
+					onChange={handleInputChange}
+					placeholder='Ingresa tu correo electrónico'
+				/>
+			</div>
+
 
 			<div className='relative'>
 				<label className='font-semibold text-[15.5px] text-text-color'>Contraseña</label>
@@ -267,7 +290,7 @@ export const Register = () => {
 	const renderStepTwo = () => (
 		<div>
 			<label className='font-semibold text-[15.5px] text-text-color'>Tipo y numero de identificación</label>
-			<div className='flex gap-5'>
+			<div className='flex gap-5 relative'>
 				<select
 					className={`w-1/3 h-11 pl-5 bg-bg-color text-text-color rounded-md mt-2 mb-5 border-r-8 border-bg-color ${errorFields.includes('tipoID') ? 'error' : ''}`}
 					name='tipoID'
@@ -287,6 +310,14 @@ export const Register = () => {
 					onChange={handleInputChange}
 					placeholder='Numero de ID'
 				/>
+				{documentoCheck && (
+					<>
+						<div className='absolute bg-purple-darker-color py-3 px-2 text-sm -top-11 right-2 z-20 rounded-md text-white-color'>
+							<p>Este documento ya esta registrado</p>
+						</div>
+						<div className='absolute h-5 w-5 -top-3 right-7 transform rotate-45 bg-purple-darker-color'></div>
+					</>
+				)}
 			</div>
 			<label className='font-semibold text-[15.5px] text-text-color'>Fecha de nacimiento</label>
 			<input
@@ -513,7 +544,7 @@ export const Register = () => {
 
 				{resultRegister != undefined && (
 					<div className='absolute bg-purple-darker-color text-text-color top-40 left-[75px] w-4/6 p-9 text-center rounded-lg'>
-						{resultRegister === 'ok' ? (
+						{resultRegister ? (
 							<div className='m-auto'>
 								<div className='text-xl'>
 									<MdDone className='m-auto text-8xl mb-5'></MdDone>
@@ -523,7 +554,7 @@ export const Register = () => {
 								<hr />
 								<p className='mt-5'>Serás redireccionado para iniciar sesión</p>
 							</div>
-						) : resultRegister === 'dup' ? (
+						) : !resultRegister ? (
 							<div>
 
 								<MdNotInterested className='m-auto text-8xl mb-5'></MdNotInterested>

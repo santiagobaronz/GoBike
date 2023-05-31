@@ -65,10 +65,20 @@ export const Perfil = () => {
 		return `${year}-${month}-${day}`;
 	  }
 
+
+	const handleLogout = () => {
+		localStorage.removeItem('sesion');
+		navigate('/');
+	};
+
 	return (
 		<div className="p-16 w-full">
 			<div>
-				<h2 className='text-white-color text-2xl font-semibold'>Hola, {userData.n_nombre1}.</h2>
+				<div className='flex justify-between'>
+					<h2 className='text-white-color text-2xl font-semibold'>Hola, {userData.n_nombre1}.</h2>
+					<button className='text-red text-sm' onClick={handleLogout}>Cerrar sesión</button>
+				</div>
+				
 				<div className='flex gap-x-5'>
 					<p className={`p-2 w-1/2 text-[15px] text-center text-white-color mt-4 rounded-md ${planColor()} `}>{userData.n_planServicio}</p>
 					<p className={`p-2 w-1/2 text-[15px] text-center text-white-color mt-4 rounded-md bg-purple-color `}>Saldo: ${userData.v_saldoFinal}</p>

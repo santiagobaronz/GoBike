@@ -23,8 +23,8 @@ export const Login = () => {
 	  }, [isLoggedIn, navigate]);
 
 	const [formData, setFormData] = useState({
-		correo: '',
-		contrasena: ''
+		correo: 'sbz@correo.com',
+		contrasena: 'Prueba1234#'
 	});
 
 	const handleInputChange = (event) => {

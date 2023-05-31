@@ -8,18 +8,14 @@ const registerUserDB = async (formData) => {
 		body: JSON.stringify(formData)
 	  });
   
-	  if (response.ok) {
+	  if (response) {
 		const data = await response.json();
-		if(data.code != undefined){
-			if(data.code == 23505){
-				return 'dup'
-			}
-		}
+		return data;
 	  } else {
 		throw new Error('Error al enviar los datos al servidor');
 	  }
 	} catch (error) {
-	  return 'ok'
+	  return true
 	}
   }
 

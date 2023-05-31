@@ -25,3 +25,16 @@ input[type=number]::-moz-number-spin-box {
 	border: 2px solid;
 	border-color: rgb(106, 35, 35);
   }
+
+body::-webkit-scrollbar{
+    width: 7px;
+    background-color: transparent;
+}
+body::-webkit-scrollbar-track{
+    background-color: #000000;
+}
+
+body::-webkit-scrollbar-thumb{
+    background-color: #252525;
+    border-radius: 5px;
+}

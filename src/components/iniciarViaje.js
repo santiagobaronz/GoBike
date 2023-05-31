@@ -1,7 +1,6 @@
 const iniciarNuevoViaje = async (userData, estacionData) => {
 
 	const dataToSend = { ...userData, ...estacionData };
-	console.log(dataToSend)
 
 	try {
 		const response = await fetch('http://localhost:3000/iniciarViaje', {
